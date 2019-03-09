@@ -2,7 +2,7 @@
 
 echo $(gcc --version)
 
-VERSION=5.11.3
+VERSION=5.17.2
 shared_lib_file="/usr/local/lib/librocksdb.so.${VERSION}"
 if [ -e $shared_lib_file ]; then
     echo "$shared_lib_file exists"
