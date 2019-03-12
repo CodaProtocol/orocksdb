@@ -84,6 +84,26 @@ module type ROCKS = sig
   type t
   type batch
 
+  module BackupEngine : sig
+    type db = t
+    type info
+    type restore_opts
+    type t
+
+    val open_ : ?opts:Options.t -> string -> t
+    val create_new_backup : t -> db -> unit
+    val verify_backup : t -> Unsigned.uint32 -> unit
+    val restore_options_create : unit -> restore_opts
+    val set_keep_log_files : restore_opts -> bool -> unit
+    (** first string is db dir, second is log dir, usually the same *)
+    val restore_db_from_latest_backup :
+      t -> string -> string -> restore_opts -> unit
+    val purge_old_backups : t -> Unsigned.uint32 -> unit
+    val get_backup_info : t -> info
+    val info_count : info -> int
+    val info_backup_id : info -> int -> Unsigned.uint32
+  end
+
   val get_pointer : t -> unit Ctypes.ptr
 
   val open_db : ?opts:Options.t -> string -> t

@@ -27,6 +27,26 @@ let main () =
        | None -> "None") in
   print_string_option (read "mykey");
   print_string_option (read "mykey2");
+
+  (* backup tests:
+     remove any existing backups
+     create new backup, verify it
+     restore db from backup
+  *)
+
+  let open BackupEngine in
+
+  let backup_dir = "/tmp/rocks_backup_test" in
+  let backup_eng = open_ ~opts:open_opts backup_dir in
+  ignore (purge_old_backups backup_eng Unsigned.UInt32.zero);
+  ignore (create_new_backup backup_eng db);
+  let info = get_backup_info backup_eng in
+  let count = info_count info in
+  let id = info_backup_id info (count - 1) in
+  ignore (verify_backup backup_eng id);
+  let restore_opts = restore_options_create () in
+  ignore (restore_db_from_latest_backup backup_eng backup_dir backup_dir restore_opts);
+
   close db
 
 let () =
