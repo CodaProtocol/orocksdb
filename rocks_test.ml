@@ -38,7 +38,7 @@ let main () =
 
   let backup_dir = "/tmp/rocks_backup_test" in
   let backup_eng = open_ ~opts:open_opts backup_dir in
-  ignore (purge_old_backups backup_eng 0);
+  ignore (purge_old_backups backup_eng Unsigned.UInt32.zero);
   ignore (create_new_backup backup_eng db);
   let info = get_backup_info backup_eng in
   let count = info_count info in

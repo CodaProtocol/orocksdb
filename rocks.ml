@@ -488,17 +488,20 @@ and RocksDb : Rocks_intf.ROCKS with type batch := WriteBatch.t = struct
       | None -> Options.with_t inner
       | Some opts -> inner opts
 
-    let create_new_backup =
+    let do_create_new_backup =
       foreign
         "rocksdb_backup_engine_create_new_backup"
-        (t @-> db @-> returning void)
+        (t @-> db @-> ptr string_opt @-> returning void)
+
+    let create_new_backup t db =
+      with_err_pointer (do_create_new_backup t db)
 
     let do_verify_backup =
       foreign "rocksdb_backup_engine_verify_backup"
         (t @-> uint32_t @-> ptr string_opt @-> returning void)
 
-    let verify_backup backup n =
-      with_err_pointer (do_verify_backup backup n)
+    let verify_backup t n =
+      with_err_pointer (do_verify_backup t n)
 
     let restore_options_create_no_gc =
       foreign "rocksdb_restore_options_create"
@@ -532,15 +535,15 @@ and RocksDb : Rocks_intf.ROCKS with type batch := WriteBatch.t = struct
       foreign "rocksdb_backup_engine_restore_db_from_latest_backup"
         (t @-> string @-> string @-> restore_opts @-> ptr string_opt @-> returning void)
 
-    let restore_db_from_latest_backup backup db_dir log_dir opts =
-      with_err_pointer (do_restore_db_from_latest_backup backup db_dir log_dir opts)
+    let restore_db_from_latest_backup t db_dir log_dir opts =
+      with_err_pointer (do_restore_db_from_latest_backup t db_dir log_dir opts)
 
     let do_purge_old_backups =
       foreign "rocksdb_backup_engine_purge_old_backups"
-        (t @-> int @-> ptr string_opt @-> returning void)
+        (t @-> uint32_t @-> ptr string_opt @-> returning void)
 
-    let purge_old_backups backup keep =
-      with_err_pointer (do_purge_old_backups backup keep)
+    let purge_old_backups t keep =
+      with_err_pointer (do_purge_old_backups t keep)
 
     let get_backup_info =
       foreign "rocksdb_backup_engine_get_backup_info"

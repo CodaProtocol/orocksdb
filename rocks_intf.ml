@@ -98,7 +98,7 @@ module type ROCKS = sig
     (** first string is db dir, second is log dir, usually the same *)
     val restore_db_from_latest_backup :
       t -> string -> string -> restore_opts -> unit
-    val purge_old_backups : t -> int -> unit
+    val purge_old_backups : t -> Unsigned.uint32 -> unit
     val get_backup_info : t -> info
     val info_count : info -> int
     val info_backup_id : info -> int -> Unsigned.uint32
